@@ -1,44 +1,16 @@
 /**
- * i18n Localization Engine for Learn Arduino
- * Handles dynamic locale loading, URL-based routing (/id/, /es/, etc.),
- * DOM text and attribute translation, and persistent language preferences.
+ * Indonesian Localization Engine for Learn Arduino
+ * Configured exclusively for Bahasa Indonesia.
  */
 
+import idDict from "./locales/id.js";
+
 export const SUPPORTED_LANGUAGES = [
-  { code: "en", name: "English", locale: "en_US" },
-  { code: "es", name: "Español", locale: "es_ES" },
-  { code: "pt", name: "Português", locale: "pt_BR" },
-  { code: "fr", name: "Français", locale: "fr_FR" },
-  { code: "de", name: "Deutsch", locale: "de_DE" },
-  { code: "it", name: "Italiano", locale: "it_IT" },
-  { code: "tr", name: "Türkçe", locale: "tr_TR" },
   { code: "id", name: "Bahasa Indonesia", short: "Indonesia", locale: "id_ID" },
-  {
-    code: "zh",
-    name: "简体中文",
-    short: "中文",
-    tag: "zh-Hans",
-    locale: "zh_CN",
-  },
-  { code: "ja", name: "日本語", locale: "ja_JP" },
-  { code: "ko", name: "한국어", locale: "ko_KR" },
-  { code: "hi", name: "हिन्दी", locale: "hi_IN" },
-  { code: "he", name: "עברית", dir: "rtl", locale: "he_IL" },
 ];
 
-export const STORAGE_KEY = "learn-arduino:lang";
-
-export const getLangTag = (code) =>
-  SUPPORTED_LANGUAGES.find((lang) => lang.code === code)?.tag ?? code;
-
-export const getLangDir = (code) =>
-  SUPPORTED_LANGUAGES.find((lang) => lang.code === code)?.dir ?? "ltr";
-
-export const isValidLang = (code) =>
-  SUPPORTED_LANGUAGES.some((lang) => lang.code === code);
-
-export let currentDict = {};
-export let currentLang = "en";
+export const currentDict = idDict || {};
+export const currentLang = "id";
 
 /**
  * Translate a text key with optional parameter substitution
@@ -53,102 +25,46 @@ export function translate(key, params) {
 
 export const t = translate;
 
-export function setLanguage(lang, dict) {
-  currentLang = lang;
-  currentDict = dict ?? {};
+export function setLanguage() {
+  // Always Bahasa Indonesia
 }
 
-export function getPathLang(pathname = window.location.pathname) {
-  const match = pathname.match(/^\/([a-z]{2})(\/|$)/)?.[1];
-  return match && match !== "en" && isValidLang(match) ? match : "en";
+export function getPathLang() {
+  return "id";
 }
 
-export function getLangUrl(lang) {
-  const cleanPath = window.location.pathname.replace(/^\/[a-z]{2}(\/|$)/, "/");
-  const base =
-    lang === "en"
-      ? cleanPath === "/"
-        ? "/"
-        : cleanPath
-      : `/${lang}${cleanPath === "/" ? "/" : cleanPath}`;
-  return base + window.location.search + window.location.hash;
+export function getLangUrl() {
+  return "/";
 }
 
 export function getStoredLang() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return isValidLang(stored) ? stored : null;
-  } catch {
-    return null;
-  }
+  return "id";
 }
 
 export function getBrowserLang() {
-  const list = navigator.languages ?? [navigator.language];
-  for (const l of list) {
-    const prefix = String(l).slice(0, 2).toLowerCase().replace(/^iw$/, "he");
-    if (isValidLang(prefix)) return prefix;
-  }
-  return null;
+  return "id";
 }
 
-// Vite dynamic glob imports for all locales
-const localeModules = import.meta.glob("./locales/*.js");
-
 /**
- * Initialize internationalization based on URL path or browser/stored settings
+ * Initialize language: sets HTML to 'id' and translates existing DOM
  */
 export async function initI18n() {
-  let lang = getPathLang(window.location.pathname);
-
-  // If at root and no language prefix, check stored preference
-  if (lang === "en" && window.location.pathname === "/") {
-    const pref = getStoredLang() ?? getBrowserLang();
-    if (pref && pref !== "en") {
-      window.location.replace(getLangUrl(pref));
-      return false;
-    }
+  document.documentElement.lang = "id";
+  document.documentElement.dir = "ltr";
+  if (document.body) {
+    translateDom(document.body);
   }
-
-  if (lang !== "en") {
-    const loader = localeModules[`./locales/${lang}.js`];
-    if (loader) {
-      try {
-        const mod = await loader();
-        setLanguage(lang, mod.default);
-      } catch (err) {
-        console.warn(`[i18n] Failed to load locale "${lang}":`, err);
-        setLanguage("en");
-      }
-    }
-  }
-
-  document.documentElement.lang = getLangTag(currentLang);
-  document.documentElement.dir = getLangDir(currentLang);
   return true;
 }
 
-/**
- * Switch current language and navigate to the localized route
- */
-export function switchLang(lang) {
-  if (isValidLang(lang)) {
-    try {
-      localStorage.setItem(STORAGE_KEY, lang);
-    } catch {}
-    if (lang !== currentLang) {
-      window.location.assign(getLangUrl(lang));
-    }
-  }
+export function switchLang() {
+  // Single-language mode: no-op
 }
 
 const TRANSLATABLE_ATTRS = ["aria-label", "title", "alt", "placeholder"];
 
-/**
- * Traverse DOM tree and translate text nodes and localized attributes
- */
-export function translateDom(root) {
-  if (currentLang === "en") return;
+export function translateDom(root = document.body) {
+  if (!root) return;
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
@@ -186,9 +102,6 @@ const SKIP_KEYS = new Set([
   "via",
 ]);
 
-/**
- * Recursively translate object/array lesson metadata and code comments
- */
 export function translateData(data, translator = translate, context = "") {
   if (typeof data === "string") {
     return context === "code"
@@ -230,10 +143,8 @@ export function translateData(data, translator = translate, context = "") {
   return data;
 }
 
-// Passthrough loader helper
 export const dynamicLoader = (fn) => fn();
 
-// Backward compatibility aliases for existing bundled code
 export {
   translate as a,
   switchLang as i,

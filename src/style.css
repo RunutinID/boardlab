@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap");
+
 @font-face {
   font-family: Barlow;
   font-style: normal;
@@ -329,31 +331,55 @@
   unicode-range: U+590-5FF, U+20AA, U+FB1D-FB4F;
 }
 :root {
-  --bg: #f6eddd;
-  --bg-deep: #efe3d1;
-  --sidebar: #e9dcca;
-  --card: #f9f2e5;
-  --card-soft: #faf4e9f7;
-  --code-bg: #f8f0e3;
-  --line: #cec0ad;
-  --line-soft: #e2d7c7;
-  --navy: #18213d;
-  --navy-2: #24304a;
-  --ink: #4f535b;
-  --muted: #696d74;
-  --faint: #ada293;
-  --teal: #1aa3a1;
-  --teal-deep: #3f7f8e;
-  --trace: #d3bea3;
-  --track: #e3d8ca;
+  --bg: #fdf8ee;
+  --bg-page: #fdf8ee;
+  --bg-deep: #f5f0e8;
+  --bg-field: #f5f0e8;
+  --sidebar: #ffffff;
+  --bg-sidebar: #ffffff;
+  --card: #ffffff;
+  --bg-card: #ffffff;
+  --card-soft: #fffffffa;
+  --code-bg: #282c34;
+  --code-border: #1a1a1a;
+  --line: #1a1a1a;
+  --border-default: #1a1a1a;
+  --line-soft: #dcd6cd;
+  --border-muted: #dcd6cd;
+  --navy: #1a1a1a;
+  --navy-2: #282c34;
+  --ink: #1a1a1a;
+  --text-primary: #1a1a1a;
+  --muted: #5c6370;
+  --text-muted: #5c6370;
+  --text-secondary: #5c6370;
+  --faint: #8c929d;
+  --teal: #2f9f8a;
+  --teal-deep: #238a77;
+  --brand-primary: #2f9f8a;
+  --brand-secondary: #ffd166;
+  --brand-mint: #9edfc7;
+  --brand-coral: #f4a89a;
+  --brand-sky: #b8ccf8;
+  --brand-lavender: #c5b8f7;
+  --brand-golden: #d48b00;
+  --shadow-xs: 1px 1px 0 #1a1a1a;
+  --shadow-sm: 2px 2px 0 #1a1a1a;
+  --shadow-md: 4px 4px 0 #1a1a1a;
+  --shadow-lg: 6px 6px 0 #1a1a1a;
+  --shadow-xl: 8px 8px 0 #1a1a1a;
+  --trace: #dcd6cd;
+  --track: #f5f0e8;
   --kw: #2a56a3;
-  --fn: #c0652d;
-  --gutter: #aaa59d;
-  --sans: "Barlow", system-ui, sans-serif;
-  --cond: "Barlow Semi Condensed", "Barlow", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, monospace;
-  --lightningcss-light: initial;
-  --lightningcss-dark: ;
+  --fn: #2f9f8a;
+  --gutter: #8c929d;
+  --sans:
+    "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cond: "Fredoka", "Nunito", sans-serif;
+  --mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-heading: "Fredoka", sans-serif;
+  --font-body: "Nunito", sans-serif;
+  --font-code: "JetBrains Mono", monospace;
   color-scheme: light;
 }
 * {
@@ -3910,4 +3936,320 @@ html:lang(he) body * {
 }
 :root[dir="rtl"] .sig {
   direction: ltr;
+}
+
+/* ========================================================
+   RUNUTIN DESIGN SYSTEM ENHANCEMENTS (runutin.com styling)
+   ======================================================== */
+
+body {
+  background-color: var(--bg-page) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+}
+
+/* Sidebar */
+.sidebar {
+  background: var(--bg-sidebar) !important;
+  border-right: 2px solid var(--border-default) !important;
+  box-shadow: 3px 0 0 rgba(26, 26, 26, 0.08) !important;
+}
+
+.side-toggle {
+  background: var(--bg-card) !important;
+  border: 2px solid var(--border-default) !important;
+  border-radius: 8px !important;
+  box-shadow: 2px 2px 0 var(--border-default) !important;
+}
+
+.side-nav li a {
+  border-radius: 12px !important;
+  transition: all 0.15s ease !important;
+  font-family: var(--font-body) !important;
+  font-weight: 700 !important;
+}
+
+.side-nav li a:hover {
+  background: var(--bg-field) !important;
+}
+
+.side-nav li.is-active a {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  border: 2px solid var(--border-default) !important;
+  box-shadow: 2px 2px 0 var(--border-default) !important;
+  border-radius: 12px !important;
+}
+
+.side-nav li.is-active a svg path,
+.side-nav li.is-active a svg rect {
+  stroke: #ffffff !important;
+}
+
+.side-nav li.is-active a svg.fill path,
+.side-nav li.is-active a svg rect.fill {
+  fill: #ffffff !important;
+}
+
+.side-lang {
+  display: none !important;
+}
+
+/* Header & Brand */
+.brand-text h1 {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.02em !important;
+}
+
+.brand-text p {
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+}
+
+.brand-logo .loop {
+  stroke: var(--brand-primary) !important;
+}
+
+.brand-logo .sign {
+  stroke: var(--brand-secondary) !important;
+}
+
+/* Progress & Status Cards */
+.progress-card {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 14px !important;
+  box-shadow: 4px 4px 0 var(--border-default) !important;
+}
+
+.progress-icon {
+  stroke: var(--brand-primary) !important;
+}
+
+.progress-label {
+  font-family: var(--font-heading) !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.progress-track {
+  background: var(--bg-field) !important;
+  border: 1.5px solid var(--border-default) !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+
+.progress-fill {
+  background: var(--brand-primary) !important;
+  border-radius: 9999px !important;
+}
+
+.clock {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 14px !important;
+  box-shadow: 4px 4px 0 var(--border-default) !important;
+  font-family: var(--font-code) !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+/* Viewbar 3D Controls */
+.viewbar {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 9999px !important;
+  box-shadow: 4px 4px 0 var(--border-default) !important;
+  padding: 5px 8px !important;
+}
+
+.viewbar button {
+  border-radius: 9999px !important;
+  transition: all 0.15s ease !important;
+}
+
+.viewbar button:hover {
+  background: var(--brand-mint) !important;
+}
+
+.viewbar button[aria-pressed="true"],
+.viewbar button.is-active {
+  background: var(--brand-primary) !important;
+}
+
+.viewbar button[aria-pressed="true"] svg path,
+.viewbar button[aria-pressed="true"] svg circle {
+  stroke: #ffffff !important;
+}
+
+/* Info Card & Tabs */
+.info-card {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 16px !important;
+  box-shadow: 5px 5px 0 var(--border-default) !important;
+}
+
+.tabs button {
+  font-family: var(--font-body) !important;
+  font-weight: 700 !important;
+  border-radius: 10px 10px 0 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+.tabs button.is-active {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  border: 2px solid var(--border-default) !important;
+  border-bottom: none !important;
+  box-shadow: 2px -2px 0 var(--border-default) !important;
+  font-family: var(--font-heading) !important;
+  font-weight: 600 !important;
+}
+
+/* Code Card & Action Buttons */
+.code-card {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 16px !important;
+  box-shadow: 5px 5px 0 var(--border-default) !important;
+}
+
+.code-card header {
+  border-bottom: 2px solid var(--border-default) !important;
+}
+
+.code-card header h2 {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+.btn-run {
+  background: var(--brand-primary) !important;
+  color: #ffffff !important;
+  border: 2px solid var(--border-default) !important;
+  box-shadow: 3px 3px 0 var(--border-default) !important;
+  border-radius: 10px !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-run:hover {
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 4px 4px 0 var(--border-default) !important;
+  background: var(--teal-deep) !important;
+}
+
+.btn-run:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 1px 1px 0 var(--border-default) !important;
+}
+
+.btn-ghost {
+  border: 2px solid var(--border-default) !important;
+  box-shadow: 2px 2px 0 var(--border-default) !important;
+  border-radius: 8px !important;
+  background: var(--bg-card) !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-ghost:hover {
+  background: var(--bg-field) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0 var(--border-default) !important;
+}
+
+.btn-ghost:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: 1px 1px 0 var(--border-default) !important;
+}
+
+/* Lessons Cards */
+.lessons h2 {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  letter-spacing: -0.01em !important;
+}
+
+.lesson-card {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 16px !important;
+  box-shadow: 4px 4px 0 var(--border-default) !important;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease !important;
+}
+
+.lesson-card:hover {
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0 var(--border-default) !important;
+  border-color: var(--brand-primary) !important;
+}
+
+.lesson-card.is-active {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 4px 4px 0 var(--brand-primary) !important;
+}
+
+.lesson-title {
+  font-family: var(--font-heading) !important;
+  font-weight: 600 !important;
+}
+
+/* Inspector, Schematic & Tooltip */
+.inspector {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 16px !important;
+  box-shadow: 6px 6px 0 var(--border-default) !important;
+}
+
+.schematic {
+  border: 2px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 16px !important;
+  box-shadow: 6px 6px 0 var(--border-default) !important;
+}
+
+.tip {
+  border: 1.5px solid var(--border-default) !important;
+  background: var(--bg-card) !important;
+  border-radius: 8px !important;
+  box-shadow: 2px 2px 0 var(--border-default) !important;
+  font-family: var(--font-body) !important;
+}
+
+/* Loading Screen */
+.loader {
+  background: var(--bg-page) !important;
+}
+
+.loader-title {
+  font-family: var(--font-heading) !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+}
+
+.loader-logo .loop {
+  stroke: var(--brand-primary) !important;
+}
+
+.loader-logo .sign {
+  stroke: var(--brand-secondary) !important;
+}
+
+.loader-track {
+  background: var(--bg-field) !important;
+  border: 1.5px solid var(--border-default) !important;
+  border-radius: 9999px !important;
+}
+
+.loader-fill {
+  background: var(--brand-primary) !important;
 }
