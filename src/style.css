@@ -1009,9 +1009,9 @@ svg {
   background: #f6edde99;
   border-radius: 12px;
   width: 476px;
-  height: 397px;
+  height: 500px;
   position: absolute;
-  top: 120px;
+  top: 17px;
   right: 20px;
 }
 .tabs {
@@ -3353,8 +3353,8 @@ html.compact .artboard {
   height: auto;
   min-height: 100dvh;
   padding: 14px 12px calc(78px + env(safe-area-inset-bottom));
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas: "brand status" "stage stage" "lessons lessons" "info info" "code code" "foot foot";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "brand" "stage" "lessons" "info" "code" "foot";
   align-items: center;
   gap: 14px;
   display: grid;
@@ -3391,46 +3391,6 @@ html.compact .brand-text h1 {
 html.compact .brand-text p {
   letter-spacing: 0.15em;
   font-size: 12.5px;
-}
-html.compact .status {
-  border: 0;
-  grid-area: status;
-  align-items: center;
-  gap: 14px;
-  width: auto;
-  height: auto;
-  display: flex;
-  position: static;
-}
-html.compact .progress-card {
-  gap: 12px;
-  width: 200px;
-  height: 52px;
-  padding: 0 12px;
-  position: static;
-}
-html.compact .progress-icon {
-  width: 28px;
-  height: 28px;
-}
-html.compact .progress-label {
-  font-size: 14px;
-}
-html.compact .progress-row {
-  gap: 9px;
-  margin-top: 2px;
-}
-html.compact .progress-track {
-  height: 10px;
-}
-html.compact .progress-count {
-  font-size: 15px;
-}
-html.compact .clock {
-  gap: 1px;
-  font-size: 13px;
-  line-height: 17px;
-  position: static;
 }
 html.compact .stage {
   border: 1.5px solid var(--line);
@@ -3677,12 +3637,8 @@ html.compact .flyout.is-open {
 @media (width<=600px) {
   html.compact .artboard {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "brand" "status" "stage" "lessons" "info" "code" "foot";
+    grid-template-areas: "brand" "stage" "lessons" "info" "code" "foot";
     row-gap: 12px;
-  }
-  html.compact .progress-card {
-    flex: 1;
-    width: auto;
   }
   html.compact .brand-text h1 {
     font-size: 20px;
@@ -3698,9 +3654,9 @@ html.compact .flyout.is-open {
   html.compact .artboard {
     padding: 8px calc(10px + env(safe-area-inset-right)) 14px
       calc(72px + env(safe-area-inset-left));
-    grid-template-rows: repeat(5, auto) 1fr;
+    grid-template-rows: repeat(4, auto) 1fr;
     grid-template-columns: minmax(0, 1.5fr) minmax(250px, 1fr);
-    grid-template-areas: "stage brand" "stage status" "stage lessons" "stage info" "stage code" "stage foot";
+    grid-template-areas: "stage brand" "stage lessons" "stage info" "stage code" "stage foot";
     align-items: start;
     gap: 12px 14px;
   }
@@ -3725,14 +3681,6 @@ html.compact .flyout.is-open {
   }
   html.compact .brand-text p {
     font-size: 11px;
-  }
-  html.compact .status {
-    width: 100%;
-  }
-  html.compact .progress-card {
-    flex: 1;
-    width: auto;
-    height: 46px;
   }
   html.compact .sidebar {
     width: calc(62px + env(safe-area-inset-left));

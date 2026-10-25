@@ -5963,7 +5963,7 @@ function Rt() {
       24;
   e.classList.toggle(`is-cramped`, t);
 }
-(Lt(), de(F(`#clock-date`), F(`#clock-time`)));
+Lt();
 var U = new ye(F(`.info-card`), { onExpand: (e) => e && G.toggleExpanded(!1) }),
   W = new je(F(`#lesson-list`), g, { onSelect: (e) => Q(e) }),
   G = new De(F(`.code-card`), {
@@ -6051,11 +6051,15 @@ document.addEventListener(`visibilitychange`, () => {
 });
 function Gt() {
   let e = W.done.size,
-    t = g.length;
-  ((F(`#progress-count`).textContent = `${e}/${t}`),
-    (F(`#progress-fill`).style.width = `${(e / t) * 100}%`),
-    F(`.progress-track`).setAttribute(`aria-valuenow`, String(e)),
-    F(`.progress-track`).setAttribute(`aria-valuemax`, String(t)));
+    t = g.length,
+    n = F(`#progress-count`),
+    r = F(`#progress-fill`),
+    i = F(`.progress-track`);
+  if (!n || !r || !i) return;
+  ((n.textContent = `${e}/${t}`),
+    (r.style.width = `${(e / t) * 100}%`),
+    i.setAttribute(`aria-valuenow`, String(e)),
+    i.setAttribute(`aria-valuemax`, String(t)));
 }
 Gt();
 function Kt(e, t) {
