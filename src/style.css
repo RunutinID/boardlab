@@ -592,6 +592,7 @@ svg {
   overflow: hidden;
 }
 .traces {
+  display: none;
   pointer-events: none;
   width: 100%;
   height: 100%;
@@ -3361,9 +3362,6 @@ html.compact .artboard {
   overflow: visible;
   transform: none;
 }
-html.compact .traces {
-  display: none;
-}
 html.compact .brand {
   grid-area: brand;
   align-items: center;
@@ -4167,6 +4165,162 @@ body {
   box-shadow: 1px 1px 0 var(--border-default) !important;
 }
 
+/* Arduino IDE-inspired sketch editor */
+.code-card {
+  --ide-toolbar: #e9e9e9;
+  --ide-gutter: #f4f4f4;
+  --ide-border: #c8c8c8;
+  --ide-text: #333333;
+  --ide-teal: #00979d;
+  border: 1px solid var(--ide-border) !important;
+  border-radius: 4px !important;
+  background: #ffffff !important;
+  box-shadow: 0 2px 6px #00000024 !important;
+}
+
+.code-card header {
+  height: 42px;
+  padding-inline: 10px 7px;
+  background: var(--ide-toolbar);
+  border-bottom: 1px solid var(--ide-border) !important;
+}
+
+.code-card header h2 {
+  color: var(--ide-text) !important;
+  font-family: var(--sans) !important;
+  font-size: 13px;
+  font-weight: 600 !important;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.code-actions {
+  gap: 4px;
+}
+
+.btn-ghost,
+.btn-run {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.btn-ghost {
+  border: 1px solid transparent !important;
+  background: transparent !important;
+}
+
+.btn-ghost:hover {
+  border-color: var(--ide-border) !important;
+  background: #ffffff !important;
+  transform: none !important;
+}
+
+.btn-ghost svg {
+  stroke: #555555;
+  width: 18px;
+  height: 18px;
+}
+
+.btn-run,
+.code-card[data-state="running"] .btn-run,
+.btn-run.is-busy {
+  border: 1px solid #007d82 !important;
+  background: var(--ide-teal) !important;
+}
+
+.btn-run:hover {
+  background: #007d82 !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.btn-run svg,
+.btn-run svg .fill {
+  fill: #ffffff;
+}
+
+.code-wrap {
+  border-radius: 0;
+  background: #ffffff;
+}
+
+.code-wrap .code {
+  border: 0;
+  color: var(--ide-text);
+  background: linear-gradient(
+    90deg,
+    var(--ide-gutter) 0,
+    var(--ide-gutter) 42px,
+    var(--ide-border) 42px,
+    var(--ide-border) 43px,
+    #ffffff 43px
+  );
+}
+
+.code .line {
+  color: var(--ide-text);
+}
+
+.code .ln {
+  color: #858585;
+}
+
+.code .line.is-running {
+  background: #00979d1a;
+}
+
+.code .kw {
+  color: #00979d;
+}
+
+.code .fn {
+  color: #795e26;
+}
+
+.code .id {
+  color: #333333;
+}
+
+.code .num {
+  color: #a31515;
+}
+
+.console {
+  border-top: 1px solid var(--ide-border);
+  background: #ffffff;
+}
+
+.console-head {
+  height: 28px;
+  background: var(--ide-toolbar);
+  border-bottom: 1px solid var(--ide-border);
+}
+
+.console-title,
+.console-status {
+  color: #444444;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.console-lines {
+  color: #333333;
+  font-size: 12px;
+}
+
+.console-lines div:last-child {
+  color: var(--ide-teal);
+}
+
+.console-grip:after {
+  background: #a8a8a8;
+}
+
 /* Lessons Cards */
 .lessons h2 {
   font-family: var(--font-heading) !important;
@@ -4252,4 +4406,500 @@ body {
 
 .loader-fill {
   background: var(--brand-primary) !important;
+}
+
+/* Quiet, neutral surfaces; keep the board and lesson content in focus. */
+:root {
+  --bg: #f4f6f7;
+  --bg-page: #f4f6f7;
+  --bg-deep: #e9edef;
+  --bg-field: #edf0f2;
+  --sidebar: #ffffff;
+  --bg-sidebar: #ffffff;
+  --card: #ffffff;
+  --bg-card: #ffffff;
+  --card-soft: #ffffff;
+  --line: #d5dbdf;
+  --border-default: #d5dbdf;
+  --line-soft: #e2e6e9;
+  --border-muted: #e2e6e9;
+  --navy: #20282e;
+  --navy-2: #354149;
+  --ink: #20282e;
+  --text-primary: #20282e;
+  --muted: #65717a;
+  --text-muted: #65717a;
+  --text-secondary: #65717a;
+  --faint: #89939a;
+  --teal: #008f95;
+  --teal-deep: #00777d;
+  --brand-primary: #008f95;
+  --brand-secondary: #d89521;
+  --brand-mint: #d9eeee;
+  --brand-coral: #f1d7d2;
+  --brand-sky: #dce7ef;
+  --brand-lavender: #e5e1ef;
+  --brand-golden: #b87a11;
+  --shadow-xs: 0 1px 2px #17252b0d;
+  --shadow-sm: 0 1px 3px #17252b12;
+  --shadow-md: 0 2px 6px #17252b14;
+  --shadow-lg: 0 4px 12px #17252b17;
+  --shadow-xl: 0 8px 20px #17252b1a;
+  --trace: #c5cfd4;
+  --track: #e9edef;
+  --kw: #00777d;
+  --fn: #795e26;
+  --gutter: #89939a;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1d2328;
+    --bg-page: #1d2328;
+    --bg-deep: #292f34;
+    --bg-field: #272e33;
+    --sidebar: #22292e;
+    --bg-sidebar: #22292e;
+    --card: #252c31;
+    --bg-card: #252c31;
+    --card-soft: #292f34;
+    --code-bg: #191e22;
+    --code-border: #3a4349;
+    --line: #3a4349;
+    --border-default: #3a4349;
+    --line-soft: #343d43;
+    --border-muted: #343d43;
+    --navy: #e4e9ec;
+    --navy-2: #d2d9dd;
+    --ink: #e4e9ec;
+    --text-primary: #e4e9ec;
+    --muted: #b1bbc1;
+    --text-muted: #b1bbc1;
+    --text-secondary: #b1bbc1;
+    --faint: #87939a;
+    --teal: #42c4c2;
+    --teal-deep: #22aaa9;
+    --brand-primary: #42c4c2;
+    --brand-secondary: #f0bd62;
+    --brand-mint: #29413f;
+    --brand-coral: #493534;
+    --brand-sky: #303d47;
+    --brand-lavender: #3a3745;
+    --brand-golden: #e4ae4e;
+    --shadow-xs: 0 1px 2px #00000020;
+    --shadow-sm: 0 1px 3px #00000026;
+    --shadow-md: 0 2px 6px #0000002b;
+    --shadow-lg: 0 4px 12px #00000030;
+    --shadow-xl: 0 8px 20px #00000036;
+    --trace: #46545b;
+    --track: #2c3439;
+    --kw: #61d3d0;
+    --fn: #e3bd70;
+    --gutter: #87939a;
+    color-scheme: dark;
+  }
+
+  .code-card {
+    --ide-toolbar: #2a3136;
+    --ide-gutter: #22292e;
+    --ide-border: #3a4349;
+    --ide-text: #e1e7ea;
+    --ide-teal: #42c4c2;
+  }
+
+  .code-wrap .code {
+    background: linear-gradient(
+      90deg,
+      var(--ide-gutter) 0,
+      var(--ide-gutter) 42px,
+      var(--ide-border) 42px,
+      var(--ide-border) 43px,
+      #252c31 43px
+    );
+  }
+
+  .code .kw {
+    color: #61d3d0;
+  }
+
+  .code .fn {
+    color: #e3bd70;
+  }
+
+  .code .num {
+    color: #ff938b;
+  }
+
+  .code .id {
+    color: #e1e7ea;
+  }
+
+  .console,
+  .console-lines {
+    background: #252c31;
+  }
+
+  .console-title,
+  .console-status {
+    color: #d2d9dd;
+  }
+
+  .console-lines {
+    color: #d2d9dd;
+  }
+}
+
+html,
+body {
+  background: var(--bg-page) !important;
+  color: var(--text-primary);
+}
+
+.artboard {
+  background: var(--bg-page) !important;
+}
+
+.loader:before {
+  display: none;
+}
+
+.sidebar,
+.side-toggle,
+.progress-card,
+.clock,
+.viewbar,
+.info-card,
+.code-card,
+.lesson-card,
+.callout,
+.inspector,
+.schematic,
+.tip,
+.flyout {
+  border: 1px solid var(--line-soft) !important;
+  border-radius: 6px !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.sidebar {
+  background: var(--bg-sidebar) !important;
+  border-block: 0 !important;
+  border-left: 0 !important;
+}
+
+.side-toggle,
+.progress-card,
+.clock,
+.viewbar,
+.info-card,
+.lesson-card,
+.callout,
+.inspector,
+.schematic,
+.tip,
+.flyout {
+  background: var(--bg-card) !important;
+}
+
+.side-nav li.is-active a {
+  border: 0 !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+
+.side-nav li.is-active a svg path,
+.side-nav li.is-active a svg rect {
+  stroke: #ffffff !important;
+}
+
+.side-nav li.is-active a svg.fill path,
+.side-nav li.is-active a svg rect.fill {
+  fill: #ffffff !important;
+}
+
+.side-nav a:hover {
+  background: var(--bg-field) !important;
+}
+
+.side-nav svg {
+  stroke: var(--text-muted);
+}
+
+.side-nav svg .fill,
+.side-nav svg.fill {
+  fill: var(--text-muted);
+}
+
+.viewbar {
+  padding: 4px !important;
+}
+
+.viewbar button,
+.btn-ghost,
+.btn-run,
+.side-toggle,
+.tabs button,
+.console-close {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.viewbar button:hover,
+.btn-ghost:hover,
+.console-close:hover {
+  background: var(--bg-field) !important;
+  transform: none !important;
+}
+
+.viewbar button[aria-pressed="true"],
+.viewbar button.is-active {
+  background: var(--brand-primary) !important;
+}
+
+.info-card {
+  overflow: hidden;
+}
+
+.tabs button.is-active {
+  color: var(--brand-primary) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--brand-primary) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.lesson-card {
+  transition: border-color 0.15s ease !important;
+}
+
+.lesson-card:hover {
+  transform: none !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-color: var(--brand-primary) !important;
+}
+
+.lesson-card.is-active {
+  border-color: var(--brand-primary) !important;
+  box-shadow: inset 3px 0 var(--brand-primary) !important;
+}
+
+.callout {
+  border: 1px solid var(--line-soft);
+  background: var(--bg-card);
+  box-shadow: none;
+}
+
+.btn-run,
+.code-card[data-state="running"] .btn-run,
+.btn-run.is-busy {
+  background: var(--brand-primary) !important;
+  border: 1px solid var(--brand-primary) !important;
+}
+
+.btn-run:hover {
+  background: var(--teal-deep) !important;
+}
+
+.code-card {
+  --ide-toolbar: #e9edef;
+  --ide-gutter: #f3f5f6;
+  --ide-border: #d5dbdf;
+  --ide-text: #20282e;
+  --ide-teal: #008f95;
+  background: var(--bg-card) !important;
+}
+
+.code-wrap .code {
+  background: linear-gradient(
+    90deg,
+    var(--ide-gutter) 0,
+    var(--ide-gutter) 42px,
+    var(--ide-border) 42px,
+    var(--ide-border) 43px,
+    var(--bg-card) 43px
+  );
+}
+
+.console,
+.console-lines {
+  background: var(--bg-card);
+}
+
+.console-head {
+  background: var(--ide-toolbar);
+}
+
+.console-title,
+.console-status,
+.console-lines {
+  color: var(--text-secondary);
+}
+
+.console-lines div:last-child {
+  color: var(--brand-primary);
+}
+
+.lede,
+.features li,
+.lesson-title,
+.callout p,
+.clock,
+.tabs button:not(.is-active) {
+  color: var(--text-secondary) !important;
+}
+
+.feature-icon {
+  background: var(--bg-field);
+  border-color: var(--line-soft);
+}
+
+.feature-icon svg {
+  stroke: var(--navy-2);
+}
+
+.feature-icon .fill {
+  fill: var(--navy-2);
+}
+
+.brand-logo .loop,
+.brand-logo .sign {
+  stroke: var(--brand-primary) !important;
+}
+
+.progress-icon {
+  stroke: var(--brand-primary) !important;
+}
+
+.progress-track {
+  border: 1px solid var(--line-soft) !important;
+}
+
+.lesson-title,
+.brand-text h1,
+.brand-text p,
+.progress-label {
+  letter-spacing: 0 !important;
+}
+
+.tag {
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--text-muted);
+  border-radius: 5px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.tag:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  html.compact .tag {
+    min-height: 36px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 18px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .code-card {
+    --ide-toolbar: #2a3136;
+    --ide-gutter: #22292e;
+    --ide-border: #3a4349;
+    --ide-text: #e1e7ea;
+    --ide-teal: #42c4c2;
+  }
+
+  .code-wrap .code {
+    background: linear-gradient(
+      90deg,
+      var(--ide-gutter) 0,
+      var(--ide-gutter) 42px,
+      var(--ide-border) 42px,
+      var(--ide-border) 43px,
+      var(--bg-card) 43px
+    );
+    color: var(--ide-text);
+  }
+
+  .btn-ghost svg {
+    stroke: #c4cdd2;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .steps li {
+    color: #e4e9ec;
+  }
+
+  .steps li::before {
+    border-color: #58666e;
+    background: #303a40;
+    color: #f0f4f6;
+  }
+
+  .spec-grid div {
+    border-color: #4b5961;
+    background: #2a343a;
+  }
+
+  .spec-grid dt {
+    color: #b8c5cb;
+  }
+
+  .spec-grid dd {
+    color: #f0f4f6;
+  }
+
+  .info-content {
+    scrollbar-color: #63727a transparent;
+  }
+
+  .credit {
+    color: #f0f4f6;
+    border-color: #4b5961;
+    background: #2a343a;
+  }
+
+  a.credit:hover {
+    border-color: #73848d;
+    background: #354148;
+  }
+
+  .credit-x {
+    fill: #dce5e9;
+  }
+
+  .credit-rule {
+    background: #58666e;
+  }
+
+  .credit-text small {
+    color: #b8c5cb;
+  }
+
+  .credit-text b {
+    color: #f0f4f6;
+  }
+
+  .sch .box {
+    fill: #2b363c;
+    stroke: #73828a;
+  }
+
+  .sch text {
+    fill: #edf2f4;
+  }
 }

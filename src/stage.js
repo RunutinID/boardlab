@@ -16708,9 +16708,8 @@ var xs = class {
       for (let e of [...this.beads.keys()]) this.drop(e);
     }
   },
-  Ss = `M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.59-6.64 7.59H.47l8.6-9.83L0 1.15h7.6l5.24 6.93zm-1.29 19.5h2.04L6.49 3.24H4.3z`,
-  Cs = `#bba78a`,
-  ws = `x.com/DilumSanjaya`,
+  Cs = matchMedia(`(prefers-color-scheme: dark)`).matches ? `#aab8be` : `#718087`,
+  ws = `runutin.com`,
   Ts = 900,
   Es = 0.8;
 function Ds() {
@@ -16719,19 +16718,13 @@ function Ds() {
     n = `700 84px "Barlow Semi Condensed", sans-serif`;
   ((t.font = n), (t.letterSpacing = `3px`));
   let r = t.measureText(ws).width;
-  ((e.width = Math.ceil(159 + r + 20)),
+  ((e.width = Math.ceil(r + 40)),
     (e.height = 140),
     (t.fillStyle = Cs),
-    t.save(),
-    t.translate(20, 28),
-    t.scale(84 / 24, 84 / 24),
-    t.fill(new Path2D(Ss)),
-    t.restore(),
-    t.fillRect(130, 24, 3, 92),
     (t.font = n),
     (t.letterSpacing = `3px`),
     (t.textBaseline = `middle`),
-    t.fillText(ws, 159, 74));
+    t.fillText(ws, 20, 74));
   let i = new Ke(e);
   return (
     (i.colorSpace = Qe),

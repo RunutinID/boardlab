@@ -869,7 +869,7 @@ var e = {
   "Serial monitor": `Serial Monitor`,
   Main: `Utama`,
   "Run simulation": `Jalankan simulasi`,
-  "Designed by x.com/DilumSanjaya": `Didesain oleh x.com/DilumSanjaya`,
+  "Designed by runutin.com": `Didesain oleh runutin.com`,
   "Interactive 3D view. Drag or use WASD to pan, Q and E to rotate, scroll to zoom.": `Tampilan 3D interaktif. Seret atau pakai WASD untuk menggeser, Q dan E untuk memutar, gulir untuk zoom.`,
   "Part inspector": `Inspektur komponen`,
   "Schematic of the circuit": `Skema rangkaian`,
