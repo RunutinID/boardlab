@@ -1,9 +1,9 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 
-let PORT = parseInt(process.env.PORT, 10) || 5173;
-const ROOT_DIR = __dirname;
+const PORT = parseInt(process.env.PORT, 10) || 5173;
+const ROOT_DIR = import.meta.dirname;
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -28,34 +28,49 @@ const MIME_TYPES = {
   '.wasm': 'application/wasm'
 };
 
-function createServer(port) {
+function resolveFilePath(reqPath) {
+  // If it's a language route like /id/, /es/, fallback to index.html (SPA routing)
+  if (/^\/[a-z]{2}(\/|$)/.test(reqPath) && !path.extname(reqPath)) {
+    return path.join(ROOT_DIR, 'index.html');
+  }
+
+  // Check public/ directory first for static assets
+  const publicPath = path.join(ROOT_DIR, 'public', reqPath);
+  if (fs.existsSync(publicPath) && fs.statSync(publicPath).isFile()) {
+    return publicPath;
+  }
+
+  // Check root
+  let targetPath = path.join(ROOT_DIR, reqPath);
+  if (fs.existsSync(targetPath) && fs.statSync(targetPath).isDirectory()) {
+    targetPath = path.join(targetPath, 'index.html');
+  }
+
+  // Default SPA fallback for non-file requests
+  if (!fs.existsSync(targetPath) && !path.extname(reqPath)) {
+    return path.join(ROOT_DIR, 'index.html');
+  }
+
+  return targetPath;
+}
+
+function startServer(port) {
   const server = http.createServer((req, res) => {
-    // Normalize URL
     const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
-    let pathname = decodeURIComponent(parsedUrl.pathname);
+    const pathname = decodeURIComponent(parsedUrl.pathname);
 
-    // If path ends with / or is a directory, serve index.html
-    let filePath = path.join(ROOT_DIR, pathname);
+    const filePath = resolveFilePath(pathname);
 
-    try {
-      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
-        filePath = path.join(filePath, 'index.html');
-      }
-    } catch (err) {
-      // Continue
-    }
-
-    // Check if file exists
     if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('404 Not Found: ' + pathname);
+      res.end(`404 Not Found: ${pathname}`);
       return;
     }
 
     const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-
     const stat = fs.statSync(filePath);
+
     res.writeHead(200, {
       'Content-Type': contentType,
       'Content-Length': stat.size,
@@ -63,14 +78,13 @@ function createServer(port) {
       'Cache-Control': 'no-cache'
     });
 
-    const stream = fs.createReadStream(filePath);
-    stream.pipe(res);
+    fs.createReadStream(filePath).pipe(res);
   });
 
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
-      console.log(`Port ${port} is in use, trying port ${port + 1}...`);
-      createServer(port + 1);
+      console.log(`Port ${port} is occupied, trying port ${port + 1}...`);
+      startServer(port + 1);
     } else {
       console.error('Server error:', err);
     }
@@ -78,7 +92,7 @@ function createServer(port) {
 
   server.listen(port, () => {
     console.log(`\n======================================================`);
-    console.log(`🚀 Learn Arduino Local Server Running!`);
+    console.log(`🚀 Learn Arduino Server Running!`);
     console.log(`🔗 Local URL:         http://localhost:${port}/`);
     console.log(`🇮🇩 Bahasa Indonesia:  http://localhost:${port}/id/`);
     console.log(`⌨️  Tekan Ctrl+C untuk menghentikan server.`);
@@ -86,4 +100,4 @@ function createServer(port) {
   });
 }
 
-createServer(PORT);
+startServer(PORT);

@@ -1,19 +1,18 @@
 {
-  "name": "learn-arduino-clone",
+  "name": "learn-arduino",
+  "private": true,
   "version": "1.0.0",
-  "description": "Interactive 3D Arduino lessons cloned from learn-arduino-red.vercel.app",
-  "main": "server.js",
+  "type": "module",
+  "description": "Learn Arduino — interactive 3D lessons for beginners recreated with Vite",
   "scripts": {
-    "start": "node server.js",
-    "serve": "npx serve -l 3000 ."
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.{js,css}\"",
+    "start": "node server.js"
   },
-  "keywords": [
-    "arduino",
-    "threejs",
-    "webgl",
-    "simulator",
-    "lessons"
-  ],
-  "author": "Dilum Sanjaya (Original), Cloned & Analyzed via REA",
-  "license": "ISC"
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "vite": "^8.3.5"
+  }
 }
