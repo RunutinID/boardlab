@@ -1,0 +1,19 @@
+{
+  "name": "learn-arduino-clone",
+  "version": "1.0.0",
+  "description": "Interactive 3D Arduino lessons cloned from learn-arduino-red.vercel.app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "serve": "npx serve -l 3000 ."
+  },
+  "keywords": [
+    "arduino",
+    "threejs",
+    "webgl",
+    "simulator",
+    "lessons"
+  ],
+  "author": "Dilum Sanjaya (Original), Cloned & Analyzed via REA",
+  "license": "ISC"
+}
