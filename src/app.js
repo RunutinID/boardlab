@@ -1,5 +1,7 @@
 const __vite__mapDeps = () => [];
 import { a as e, i as t, n, o as r, r as i, s as a, t as o } from "./main.js";
+import { getLessonData, esp32ExtraLessons } from "./esp32-curriculum.js";
+import { adaptESP32Schematic } from "./esp32-stage.js";
 var s = Object.defineProperty,
   c = (e, t) => {
     let n = {};
@@ -2722,7 +2724,16 @@ void loop() {
       sim: `project`,
     },
   ],
-  g = i(ee);
+  activeBoard = document.body.dataset.board === `esp32` ? `esp32` : `uno`,
+  boardStorageKey = (e) => `learn-arduino:${e}:${activeBoard}`,
+  g = i(
+    activeBoard === `esp32`
+      ? [
+          ...ee.map((e) => getLessonData(e, activeBoard)),
+          ...esp32ExtraLessons,
+        ]
+      : ee,
+  );
 function _(e) {
   return Object.fromEntries((e.params ?? []).map((e) => [e.key, e.value]));
 }
@@ -4293,7 +4304,14 @@ var w = 92,
     }
     load() {
       try {
-        return JSON.parse(localStorage.getItem(`learn-arduino:done`) ?? `[]`);
+        let e = localStorage.getItem(boardStorageKey(`done`));
+        return JSON.parse(
+          e ??
+            (activeBoard === `uno`
+              ? localStorage.getItem(`learn-arduino:done`)
+              : null) ??
+            `[]`,
+        );
       } catch {
         return [];
       }
@@ -4312,7 +4330,7 @@ var w = 92,
       this.done.add(e);
       try {
         localStorage.setItem(
-          `learn-arduino:done`,
+          boardStorageKey(`done`),
           JSON.stringify([...this.done]),
         );
       } catch {}
@@ -5742,7 +5760,9 @@ var vt = class {
     }
     render() {
       if (!this.lesson) return;
-      let e = at[this.lesson.id];
+      let e = activeBoard === `esp32`
+        ? adaptESP32Schematic(this.lesson.id, at[this.lesson.id])
+        : at[this.lesson.id];
       ((this.title.textContent = this.lesson.title),
         e
           ? ((this.drawn = _t(e, this.values ?? {})),
@@ -5888,10 +5908,14 @@ var I = F(`#app`),
   Mt = 0.85,
   Nt = g.find((e) => `#${e.id}` === location.hash),
   H = {
+    board: activeBoard,
     lesson: Nt ?? g[0],
     running: `idle`,
     settings: Ft(),
-    saved: Pt(`learn-arduino:values`, {}),
+    saved: Pt(
+      boardStorageKey(`values`),
+      activeBoard === `uno` ? Pt(`learn-arduino:values`, {}) : {},
+    ),
     values: {},
   };
 H.values = qt(H.lesson);
@@ -6041,7 +6065,9 @@ var Ut = new qe(F(`#signals`)),
     resetProgress: () => {
       W.done.clear();
       try {
-        localStorage.removeItem(`learn-arduino:done`);
+        (localStorage.removeItem(boardStorageKey(`done`)),
+          activeBoard === `uno` &&
+            localStorage.removeItem(`learn-arduino:done`));
       } catch {}
       (W.paintDone(), Gt());
     },
@@ -6491,11 +6517,12 @@ async function hn() {
       renderer: K.renderer,
       environment: K.scene.environment,
       board: K.board,
-      onEach: (t, n) =>
+      onEach: (t, n) => {
         $.step(
           e(`Drawing the lessons · {n} / {total}`, { n: t, total: n }),
           0.6 + (0.38 * t) / n,
-        ),
+        );
+      },
     });
   } catch (e) {
     console.error(e);

@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="/src/style.css" />
     <script type="module" src="/src/main.js"></script>
   </head>
-  <body>
+  <body data-board="uno">
     <!-- Covers the page until the board is built and every lesson card has its picture -->
     <div class="loader" id="loader" role="status" aria-live="polite">
       <div class="loader-inner">
@@ -128,7 +128,7 @@
       </nav>
       <aside class="flyout" id="flyout" aria-live="polite"></aside>
 
-      <!-- Brand -->
+      <!-- Brand & Board Selector -->
       <header class="brand">
         <svg class="brand-logo" viewBox="0 0 92 50" aria-hidden="true">
           <path class="loop" d="M24 6.5a18.5 18.5 0 1 0 0 37c8.7 0 13.4-6.6 22-18.5S59.3 6.5 68 6.5a18.5 18.5 0 1 1 0 37c-8.7 0-13.4-6.6-22-18.5S32.7 6.5 24 6.5z" />
@@ -136,9 +136,26 @@
         </svg>
         <span class="brand-rule" aria-hidden="true"></span>
         <div class="brand-text">
-          <h1>Belajar Arduino</h1>
-          <p>Eksplorasi <i>·</i> Pahami <i>·</i> Bangun</p>
+          <h1 id="brand-title">Belajar Arduino</h1>
+          <p id="brand-subtitle">Eksplorasi <i>·</i> Pahami <i>·</i> Bangun</p>
         </div>
+
+        <nav class="board-switcher" id="board-switcher" aria-label="Pilih Halaman Mikrokontroler">
+          <a href="/index.html" class="board-tab is-active" data-board="uno" title="Halaman Arduino Uno (5V · ATmega328P)">
+            <span class="board-tab-badge uno">UNO</span>
+            <span class="board-tab-text">
+              <strong>Arduino Uno</strong>
+              <small>5V · ATmega328P</small>
+            </span>
+          </a>
+          <a href="/esp32.html" class="board-tab" data-board="esp32" title="Buka Halaman DOIT ESP32 DevKit V1 (3.3V · Dual-Core · IoT)">
+            <span class="board-tab-badge esp32">ESP32</span>
+            <span class="board-tab-text">
+              <strong>ESP32 DOIT</strong>
+              <small>3.3V · Dual-Core · IoT ↗</small>
+            </span>
+          </a>
+        </nav>
       </header>
 
       <!-- Stage: three.js board + callouts -->

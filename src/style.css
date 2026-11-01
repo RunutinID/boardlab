@@ -706,12 +706,13 @@ svg {
   stroke: #6c707a;
 }
 .brand {
-  z-index: 2;
+  z-index: 20;
   align-items: flex-start;
   display: flex;
   position: absolute;
   top: 21px;
   left: 95px;
+  pointer-events: auto;
 }
 .brand-logo {
   width: 91px;
@@ -774,6 +775,108 @@ svg {
 .brand-text p i {
   margin: 0 0.45em;
   font-style: normal;
+}
+.board-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: var(--card);
+  border: 1.5px solid var(--border-default);
+  border-radius: 999px;
+  padding: 4px;
+  margin-left: 24px;
+  box-shadow: var(--shadow-sm);
+  gap: 4px;
+  user-select: none;
+  position: relative;
+  z-index: 25;
+  pointer-events: auto;
+}
+.board-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  color: var(--text-secondary);
+  font-family: var(--sans);
+  text-align: left;
+}
+.board-tab * {
+  pointer-events: none;
+}
+.board-tab:hover {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.board-tab.is-active {
+  background: var(--bg-deep);
+  border-color: var(--border-default);
+  box-shadow: 1px 1px 0 var(--border-default);
+  color: var(--text-primary);
+}
+.board-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+}
+.board-tab-badge.uno {
+  background: #2a7a58;
+  color: #ffffff;
+}
+.board-tab-badge.esp32 {
+  background: #d44a2a;
+  color: #ffffff;
+}
+.board-tab.is-active .board-tab-badge.esp32 {
+  background: #e8392e;
+  box-shadow: 0 0 8px rgba(232, 57, 46, 0.4);
+}
+.board-tab-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.board-tab-text strong {
+  font-family: var(--cond);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.board-tab-text small {
+  font-size: 10px;
+  color: var(--faint);
+  font-weight: 500;
+}
+.board-tab.is-active .board-tab-text small {
+  color: var(--text-secondary);
+}
+html.compact .board-switcher {
+  margin-left: 10px;
+  padding: 2px;
+}
+html.compact .board-tab {
+  padding: 3px 8px 3px 6px;
+  gap: 5px;
+}
+html.compact .board-tab-text small {
+  display: none;
+}
+html.compact .board-tab-text strong {
+  font-size: 11.5px;
 }
 .stage-note {
   border: 1.5px solid var(--line);

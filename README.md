@@ -12,13 +12,18 @@ Replikasi dan rekonstruksi penuh dari [Learn Arduino (learn-arduino-red.vercel.a
      - `src/i18n/index.js`: Mesin i18n terpusat dengan lazy-loading via `import.meta.glob('./locales/*.js')`, deteksi bahasa otomatis dari URL, `localStorage`, atau preferensi browser, serta update atribut HTML `lang` & `dir` (RTL untuk Bahasa Ibrani).
      - `src/i18n/locales/`: 12 modul kamus bahasa lengkap (Bahasa Indonesia `id.js`, `es.js`, `de.js`, `fr.js`, `ja.js`, `zh.js`, dsb.).
    - Vite middleware plugin otomatis menangani routing bahasa (`/id/`, `/es/`, dll.) dengan fallback SPA yang mulus di development maupun preview.
-2. **Modular Codebase (`src/`)**:
+2. **Dua Halaman Terpisah: Arduino Uno & DOIT ESP32 DevKit V1**:
+   - **Halaman Arduino Uno (`index.html` / `/`)**: Menampilkan model 3D interaktif papan Arduino Uno (ATmega328P, logika 5V, ADC 10-bit), 16 pelajaran dasar elektronika, pinout, dan simulasi sketch Arduino.
+   - **Halaman ESP32 DOIT (`esp32.html` / `/esp32`)**: Menampilkan model 3D akurat **DOIT ESP32 DevKit V1 (30 Pin)** lengkap dengan modul logam ESP-WROOM-32, antena emas 2.4 GHz, chip CP2102, regulator AMS1117 3.3V, kapasitor tantalum, tombol tactile EN & BOOT, LED PWR merah, LED D2 biru, 4 lubang baut mounting, dan silkscreen pinout resmi DOIT (EN, VP, VN, D34-D13, VIN / D23-D15, 3V3).
+   - Dilengkapi navigasi segmented switcher di header kedua halaman untuk berpindah antara Arduino Uno dan ESP32 DOIT secara instan.
+3. **Modular Codebase (`src/`)**:
    - `src/main.js`: Bootstrapper utama aplikasi & penghubung antarmuka i18n.
    - `src/app.js`: State manager, controller pelajaran interaktif, simulasi logika pin microchip (`pinMode`, `digitalWrite`, `analogRead`), dan Serial Monitor virtual.
-   - `src/stage.js`: Panggung 3D Three.js, sistem kamera interaktif (pan/rotate/zoom), tata cahaya, dan animasi aliran arus listrik (*current flow*).
+   - `src/esp32-curriculum.js`: Spesifikasi teknis ESP-WROOM-32, callouts, data pinout, override 16 modul, dan 2 modul baru (Touch & IoT Web Server).
+   - `src/stage.js`: Panggung 3D Three.js, sistem kamera interaktif (pan/rotate/zoom), tata cahaya, emulasi flashing esptool.py, dan animasi aliran arus listrik (*current flow*).
    - `src/kit.js`: Pembangkit geometri prosedural komponen elektronik 3D (Arduino Uno R3, ATmega328P, breadboard, LED, resistor, servo SG90, sensor HC-SR04, motor stepper, OLED, buzzer, dsb.).
    - `src/thumbs.js`: Generator thumbnail kartu pelajaran.
-   - `src/style.css`: Lembar gaya CSS utama.
+   - `src/style.css`: Lembar gaya CSS utama dengan sistem desain Runutin & Board Switcher responsive.
 3. **Public Assets (`public/`)**:
    - Seluruh favicon, icon PWA, manifest, dan 24 berkas web font WOFF2 (Barlow, JetBrains Mono, Noto Sans) tersimpan rapi di folder `public/`.
 4. **Standalone Server Fallback (`server.js`)**:
@@ -33,10 +38,11 @@ Replikasi dan rekonstruksi penuh dari [Learn Arduino (learn-arduino-red.vercel.a
 ```
 D:\Projects\Arduino Learn\
 ├── .gitignore                  # Git ignore rules untuk Vite & Node
-├── index.html                  # Template HTML tunggal (Single Page App)
+├── index.html                  # Halaman 1: Belajar Arduino Uno
+├── esp32.html                  # Halaman 2: Belajar DOIT ESP32 DevKit V1
 ├── package.json                # Dependencies, metadata & build scripts
 ├── pnpm-lock.yaml              # Lockfile dependensi
-├── vite.config.js              # Konfigurasi Vite & SPA Language Middleware
+├── vite.config.js              # Konfigurasi Vite MPA & SPA Language Middleware
 ├── server.js                   # Node.js static server bawaan (Zero dependency)
 ├── README.md                   # Dokumentasi proyek
 ├── public/                     # Aset statis murni (disajikan langsung di root)
@@ -52,10 +58,13 @@ D:\Projects\Arduino Learn\
 │   ├── icon-maskable-512.png
 │   └── assets/                 # Web fonts WOFF2 (Barlow, JetBrains Mono, Noto Sans)
 └── src/                        # Kode sumber aplikasi
-    ├── main.js                 # Entry point aplikasi
+    ├── main.js                 # Entry point bersama untuk kedua halaman
     ├── app.js                  # Controller UI, logic & Arduino simulator
+    ├── esp32-board.js          # Model prosedural DOIT ESP32 DevKit V1
+    ├── esp32-curriculum.js     # Kurikulum & spesifikasi DOIT ESP32 DevKit V1
+    ├── esp32-stage.js          # Pemetaan pin, komponen & skematik ESP32
     ├── stage.js                # Three.js 3D canvas stage & camera
-    ├── kit.js                  # Procedural 3D electronics & Uno board
+    ├── kit.js                  # Procedural 3D electronics (Arduino Uno & komponen)
     ├── thumbs.js               # Lesson card thumbnails generator
     ├── style.css               # Main CSS stylesheet
     └── i18n/                   # Arsitektur lokalisasi (i18n)

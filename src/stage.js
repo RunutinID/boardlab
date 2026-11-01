@@ -163,6 +163,9 @@ import {
   zr as J,
   zt as fn,
 } from "./kit.js";
+import { buildESP32Board, esp32PinPosition } from "./esp32-board.js";
+import { adaptESP32Parts, esp32Pin } from "./esp32-stage.js";
+const ESP32 = document.body.dataset.board === `esp32`;
 function pn() {
   let e = null,
     t = !1,
@@ -14799,6 +14802,9 @@ function $(e, t, n, r, { signal: i, ...a } = {}) {
     wire: !0,
     color: r,
     signal: { ...l, ...i },
+    sourceA: t,
+    sourceB: n,
+    wireOptions: a,
     build: u,
   };
 }
@@ -15334,11 +15340,31 @@ var $o = {
     force: { target: [39, 0, -39], zoom: 4.7, frame: [6.7, -12, 208.5, 113.8] },
   };
 function ts(e, t = {}) {
-  return ($o[e] ?? $o.board).parts.map((e) => ({
-    ...e,
-    key: typeof e.key == `function` ? e.key(t) : (e.key ?? e.id),
-    at: typeof e.at == `function` ? e.at(t) : e.at,
-    build: () => e.build(t),
+  let parts = ($o[e] ?? (e === `touch` ? $o.button : $o.board)).parts;
+  if (ESP32 && e === `force`) {
+    parts = [
+      ...parts,
+      ...$o.blink.parts
+        .filter((part) => [`resistor`, `led`, `w-d13`].includes(part.id))
+        .map((part) => ({ ...part, id: `force-${part.id}` })),
+    ];
+  }
+  if (ESP32) {
+    parts = parts.map((part) => {
+      if (!part.wire) return part;
+      let endpoint = (value) => typeof value === `string` ? esp32Pin(e, value) : value;
+      return $(part.id, endpoint(part.sourceA), endpoint(part.sourceB), part.color, {
+        ...part.wireOptions,
+        signal: part.signal,
+      });
+    });
+    parts = adaptESP32Parts(e, parts);
+  }
+  return parts.map((part) => ({
+    ...part,
+    key: typeof part.key == `function` ? part.key(t) : (part.key ?? part.id),
+    at: typeof part.at == `function` ? part.at(t) : part.at,
+    build: () => part.build(t),
   }));
 }
 var ns = new z(`#ffb340`);
@@ -15514,7 +15540,7 @@ var os = class {
     }
   };
 function cs(e = 220, t = `red`) {
-  return ((5 - (kt[t] ?? 2)) / e) * 1e3;
+  return (((ESP32 ? 3.3 : 5) - (kt[t] ?? 2)) / e) * 1e3;
 }
 var ls = (e, t) => Math.min(1, (cs(e, t) / 13.6) ** 0.55),
   us = [`C`, `C#`, `D`, `D#`, `E`, `F`, `F#`, `G`, `G#`, `A`, `A#`, `B`];
@@ -15559,16 +15585,34 @@ function ms(t, a) {
       scene: l,
       parts: u,
       leds: d,
-      out: f,
+      out: rawOut,
       readout: p,
       params: m,
       inputs: h,
       setParam: g,
     } = a,
+    esp = a.board === `esp32`,
+    lesson = a.lesson,
+    adcMax = esp ? 4095 : 1023,
+    volts = esp ? 3.3 : 5,
+    adcValue = (value) => Math.round((value / 1023) * adcMax),
+    f = (text) => {
+      if (!esp) return rawOut(text);
+      let mapped = String(text).replace(
+        /\b(?:D(?:[0-9]|1[0-3])|A[0-5]|SDA|SCL|5V)\b/g,
+        (pin) => esp32Pin(lesson, pin),
+      );
+      mapped = mapped.replace(/\b(pinMode|analogWrite|tone)\((\d+)/g, (match, fn, pin) => {
+        let name = esp32Pin(lesson, `D${pin}`);
+        return `${fn}(${name.replace(`GPIO`, ``)}`;
+      });
+      return rawOut(mapped);
+    },
     _ = performance.now(),
     v = a.pins ?? {},
     y = (e, t, n = `out`, r) => {
-      v[e] = { v: t, mode: n, text: r };
+      let pin = esp ? esp32Pin(lesson, e) : e;
+      v[pin] = { v: t, mode: n, text: r };
     },
     b = (e) => u.get(e)?.group,
     x = new ps(a.trace),
@@ -15576,8 +15620,55 @@ function ms(t, a) {
     C = (e, t, n = 280) => {
       e - S < n || ((S = e), f(t));
     };
+  if (t === `touch`) {
+    let previous = null;
+    return {
+      update(time) {
+        let pressed = !!h.touch;
+        let value = pressed ? 22 : 78;
+        y(`D2`, pressed ? 0.22 : 0.78, `analog`, `touchRead = ${value}`);
+        y(`D13`, +pressed);
+        rs(d.L, pressed);
+        is(b(`led`)?.userData.light, pressed ? ls(220, `red`) : 0);
+        x.at(pressed ? `digitalWrite(LED_PIN, HIGH)` : `touchRead(TOUCH_PIN)`);
+        if (pressed !== previous) {
+          previous = pressed;
+          f(pressed ? `22 < 30 · sentuh · GPIO2 HIGH` : `78 · bebas · GPIO2 LOW`);
+        }
+        p({
+          text: `touchRead(4) = ${value}`,
+          position: b(`touchpad`)?.position.clone().add(new q(0, 24, 0)) ?? new q(0, 24, 0),
+        });
+        return true;
+      },
+      stop() {
+        (x.clear(), rs(d.L, false), is(b(`led`)?.userData.light, 0), p(null));
+      },
+    };
+  }
+  if (t === `wifi`) {
+    let previous = null;
+    f(`Wi-Fi AP aktif: ESP32-SmartDevice · http://192.168.4.1`);
+    return {
+      update() {
+        let on = !!m.webLed;
+        y(`D13`, +on);
+        rs(d.L, on);
+        x.at(on ? `digitalWrite(LED_PIN, HIGH)` : `server.handleClient()`);
+        if (on !== previous) {
+          previous = on;
+          f(`GET /toggle · LED GPIO2 ${on ? `ON` : `OFF`}`);
+        }
+        p({ text: `192.168.4.1 · GPIO2 ${on ? `ON` : `OFF`}`, position: new q(0, 22, -4) });
+        return true;
+      },
+      stop() {
+        (x.clear(), rs(d.L, false), p(null));
+      },
+    };
+  }
   if (t === `builtin`) {
-    f(`pinMode(13, OUTPUT)`);
+    f(esp ? `pinMode(2, OUTPUT)` : `pinMode(13, OUTPUT)`);
     let e = !1;
     return (
       x.play(
@@ -15701,9 +15792,9 @@ function ms(t, a) {
       {
         update(t) {
           x.update(t);
-          let n = Math.round(m.pot),
-            r = Math.floor(n / 4);
-          (y(`A0`, n / 1023, `analog`, `${((n / 1023) * 5).toFixed(2)} V`),
+          let n = esp ? adcValue(m.pot) : Math.round(m.pot),
+            r = Math.round((n / adcMax) * 255);
+          (y(`A0`, n / adcMax, `analog`, `${((n / adcMax) * volts).toFixed(2)} V`),
             y(`D9`, r / 255, `pwm`),
             is(b(`led`)?.userData.light, (r / 255) * ls(220, m.color)));
           let i = b(`pot`);
@@ -15795,12 +15886,12 @@ function ms(t, a) {
             ((n = a),
             (r = Math.max(
               0,
-              Math.min(1023, po(m) + Math.round((Math.random() * 2 - 1) * 6)),
+              Math.min(adcMax, adcValue(po(m)) + Math.round((Math.random() * 2 - 1) * (esp ? 24 : 6))),
             )),
             C(a, `${r}`, 320));
           let o = r < m.threshold;
           ((i = o),
-            y(`A0`, r / 1023, `analog`, `${((r / 1023) * 5).toFixed(2)} V`),
+            y(`A0`, r / adcMax, `analog`, `${((r / adcMax) * volts).toFixed(2)} V`),
             y(`D9`, +!!o),
             x.update(a));
           let s = b(`ldr`);
@@ -16152,11 +16243,13 @@ function ms(t, a) {
           [`Serial.println(tempC)`],
           [
             () =>
-              m.fan === `ramp`
-                ? `analogWrite(FAN, constrain`
-                : i
-                  ? `analogWrite(FAN, 255)`
-                  : `analogWrite(FAN, 0)`,
+              esp
+                ? `delay(1000)`
+                : m.fan === `ramp`
+                  ? `analogWrite(FAN, constrain`
+                  : i
+                    ? `analogWrite(FAN, 255)`
+                    : `analogWrite(FAN, 0)`,
             0,
             260,
           ],
@@ -16186,7 +16279,7 @@ function ms(t, a) {
               ));
           }
           let d = 0.5 + r / 100;
-          (y(`A0`, d / 5, `analog`, `${d.toFixed(2)} V`),
+          (y(`A0`, d / volts, `analog`, `${d.toFixed(2)} V`),
             y(`D6`, i / 255, `pwm`),
             (a += ((i / 255) * 26 - a) * Math.min(1, c / (i ? 420 : 1100))));
           let h = t?.userData.prop;
@@ -16362,12 +16455,12 @@ function ms(t, a) {
             (i = Math.min(1, Math.max(0, i))),
             r - u >= 500 &&
               ((u = r),
-              (s = Math.round(515 - 245 * i + (Math.random() * 2 - 1) * 2)),
-              (c = Math.min(100, Math.max(0, h(s, m.dry, m.wet, 0, 100)))),
+              (s = Math.round(adcMax * (0.503 - 0.239 * i) + (Math.random() * 2 - 1) * (esp ? 8 : 2))),
+              (c = Math.min(100, Math.max(0, h(s, esp ? adcValue(m.dry) : m.dry, esp ? adcValue(m.wet) : m.wet, 0, 100)))),
               (l = c < m.thirsty ? g.thirsty : c > m.soggy ? g.soggy : g.happy),
               f(String(c)),
               n && We(n, { pct: c, message: l })),
-            y(`A0`, s / 1023, `analog`, `${((s * 5) / 1023).toFixed(2)} V`),
+            y(`A0`, s / adcMax, `analog`, `${((s * volts) / adcMax).toFixed(2)} V`),
             y(`SDA`, 0.5, `pulse`, e(`I²C DATA`)),
             y(`SCL`, 0.5, `pulse`, e(`I²C CLOCK`)));
           let C = Math.min(1, Math.max(0, (0.3 - i) / 0.22)),
@@ -16379,7 +16472,7 @@ function ms(t, a) {
           return (
             T &&
               p({
-                text: `A0 = ${s}`,
+                text: `${esp ? esp32Pin(lesson, `A0`) : `A0`} = ${s}`,
                 position: T.position.clone().add(new q(0, 36, 0)),
               }),
             !0
@@ -16390,6 +16483,36 @@ function ms(t, a) {
         },
       }
     );
+  }
+  if (t === `force` && esp) {
+    let sensor = b(`fsr`);
+    let weights = b(`weights`);
+    let lastLog = 0;
+    return {
+      update(time) {
+        let pressure = (weights?.userData.load?.() ?? 0) +
+          ((sensor?.userData.force?.() ?? 0) > 0 ? 20 * 500 ** sensor.userData.force() : 0);
+        let level = Math.min(1, pressure / 10000);
+        let raw = Math.round(level * adcMax);
+        let pwm = Math.round(level * 255);
+        y(`A0`, level, `analog`, `${(level * volts).toFixed(2)} V`);
+        y(`D9`, level, `pwm`);
+        is(b(`force-led`)?.userData.light, level * ls(220, m.color));
+        x.at(`analogWrite(LED_PIN, pwmVal)`);
+        if (time - lastLog > 250) {
+          lastLog = time;
+          f(`GPIO33 = ${raw} · PWM = ${pwm}`);
+        }
+        p({
+          text: `GPIO33 = ${raw}`,
+          position: sensor?.position.clone().add(new q(-14, 20, -4)) ?? new q(0, 20, 0),
+        });
+        return true;
+      },
+      stop() {
+        (x.clear(), is(b(`force-led`)?.userData.light, 0), p(null));
+      },
+    };
   }
   if (t === `force`) {
     let t = b(`fsr`),
@@ -16929,7 +17052,9 @@ var Ws = class {
       (this.markAz = null),
       (this.markToken = 0),
       (this.markCheck = 0));
-    let { root: i, anchors: a, leds: o } = Zt(this.renderer);
+    let { root: i, anchors: a, leds: o } = ESP32
+      ? buildESP32Board(this.renderer)
+      : Zt(this.renderer);
     ((this.board = i),
       (this.boardAnchors = a),
       (this.leds = o),
@@ -17028,8 +17153,10 @@ var Ws = class {
     return this.controls.view;
   }
   homeView(e = this.lessonId) {
-    let t = es[e] ?? es.board,
-      n = {
+    let t = es[e] ?? es.board;
+    if (ESP32 && [`board`, `touch`, `wifi`].includes(e))
+      t = { ...es.board, frame: [0, -1.7, 48, 62.7] };
+    let n = {
         target: t.target,
         zoom: t.zoom,
         azimuth: Ps.azimuth,
@@ -17112,7 +17239,9 @@ var Ws = class {
       let t = e.slice(4);
       if (!this.pins.has(t)) {
         let e = new Xt();
-        (e.position.copy(Ya(t)), this.scene.add(e), this.pins.set(t, e));
+        (e.position.copy(ESP32 ? new q(...esp32PinPosition(t)) : Ya(t)),
+          this.scene.add(e),
+          this.pins.set(t, e));
       }
       return this.pins.get(t);
     }
@@ -17854,7 +17983,7 @@ var Ws = class {
         n(e(`Compiling sketch…`)),
         await this.tweens.wait(600),
         i !== this.runToken ||
-          (n(e(`Uploading to Arduino Uno…`)),
+          (n(e(ESP32 ? `Uploading to DOIT ESP32 DevKit V1…` : `Uploading to Arduino Uno…`)),
           await this.tweens.wait(600),
           i !== this.runToken))
       )
@@ -17864,6 +17993,8 @@ var Ws = class {
     return (
       (this.levels = {}),
       (this.sim = ms(t, {
+        board: ESP32 ? `esp32` : `uno`,
+        lesson: this.lessonId,
         trace: r,
         pins: this.levels,
         scene: this.scene,
