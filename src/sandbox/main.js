@@ -1,13 +1,15 @@
 import { VirtualCircuitBoard, WIRE_COLORS, breadboardCoord } from '../circuit/index.js';
 import { createComponentFromType } from './palette.js';
+import { WireToolState, formatEndpointLabel } from './interaction.js';
 
 let boardStage = null;
 let vcb = new VirtualCircuitBoard({ boardType: 'uno' });
 let isSimRunning = false;
 let isWireMode = false;
 let selectedPaletteType = null;
-let wireStartPoint = null;
 let simLoopId = null;
+
+const wireTool = new WireToolState();
 
 // UI Elements
 const canvas = document.getElementById('stage-canvas');
@@ -27,7 +29,7 @@ async function initStage() {
   const { BoardStage } = await import('../stage.js');
   boardStage = new BoardStage(canvas, canvasContainer, {
     onHover: (part, point) => {
-      // Handle hover highlight if needed
+      // Hover feedback
     }
   });
 
@@ -49,6 +51,7 @@ function setupEventListeners() {
   boardSelect.addEventListener('change', async (e) => {
     const newBoard = e.target.value;
     vcb = new VirtualCircuitBoard({ boardType: newBoard });
+    wireTool.cancel();
     if (boardStage) {
       await boardStage.setLesson('board');
     }
@@ -60,7 +63,6 @@ function setupEventListeners() {
     item.addEventListener('click', () => {
       const type = item.getAttribute('data-type');
       if (selectedPaletteType === type) {
-        // Deselect
         selectedPaletteType = null;
         item.classList.remove('is-selected');
         instructions.innerHTML = '💡 <b>Cara Merakit:</b> Pilih komponen di sidebar kiri lalu klik pada baris breadboard.';
@@ -69,6 +71,7 @@ function setupEventListeners() {
         item.classList.add('is-selected');
         selectedPaletteType = type;
         isWireMode = false;
+        wireTool.cancel();
         btnWireMode.textContent = '🔗 Mode Kabel: OFF';
         btnWireMode.classList.remove('btn-primary');
         instructions.innerHTML = `📍 Klik di lubang breadboard untuk menempatkan <b>${item.querySelector('.palette-label').textContent}</b>.`;
@@ -79,13 +82,13 @@ function setupEventListeners() {
   // 3. Wire Mode Toggle
   btnWireMode.addEventListener('click', () => {
     isWireMode = !isWireMode;
-    wireStartPoint = null;
+    wireTool.cancel();
     if (isWireMode) {
       selectedPaletteType = null;
       paletteItems.forEach(i => i.classList.remove('is-selected'));
       btnWireMode.textContent = '🔗 Mode Kabel: ON';
       btnWireMode.classList.add('btn-primary');
-      instructions.innerHTML = '🔌 <b>Mode Kabel:</b> Klik pin pertama (asal), lalu klik pin kedua (tujuan) untuk menyambung.';
+      instructions.innerHTML = '🔌 <b>Mode Kabel Aktif:</b> Klik pin pertama (misal: D13 / 5V / Breadboard), lalu klik pin kedua untuk menyambung kawat.';
     } else {
       btnWireMode.textContent = '🔗 Mode Kabel: OFF';
       btnWireMode.classList.remove('btn-primary');
@@ -111,20 +114,39 @@ function setupEventListeners() {
   // 5. Clear Board
   btnClear.addEventListener('click', async () => {
     vcb = new VirtualCircuitBoard({ boardType: boardSelect.value });
-    wireStartPoint = null;
+    wireTool.cancel();
     if (boardStage) {
       await boardStage.setLesson('board');
     }
     updateInspector();
+    instructions.innerHTML = '🧹 Papan sirkuit telah dibersihkan.';
   });
 
-  // 6. Canvas Click to Place Component
+  // 6. Canvas Click Interaction (Place component or connect wire)
   canvas.addEventListener('click', (e) => {
+    if (isWireMode) {
+      // Demo wire connection endpoints (e.g. D13 -> Breadboard row 12 or GND)
+      const commonPins = ['D13', 'GND', '5V', 'A0', 'D2', 'D9'];
+      const targetPin = commonPins[Math.floor(Math.random() * commonPins.length)];
+
+      if (!wireTool.isConnecting()) {
+        wireTool.selectPoint(targetPin);
+        instructions.innerHTML = `🔌 Titik asal <b>${formatEndpointLabel(targetPin)}</b> dipilih. Klik titik kedua...`;
+      } else {
+        const result = wireTool.selectPoint(targetPin);
+        if (result && result.from !== result.to) {
+          vcb.wire(result.from, result.to, { color: WIRE_COLORS.orange });
+          updateInspector();
+          instructions.innerHTML = `✨ Kawat jumper berhasil tersambung antara <b>${formatEndpointLabel(result.from)}</b> dan <b>${formatEndpointLabel(result.to)}</b>!`;
+        }
+      }
+      return;
+    }
+
     if (!selectedPaletteType) return;
     const comp = createComponentFromType(selectedPaletteType);
     if (!comp) return;
 
-    // Default to placing at row 12 col c or random row for demonstration
     const rowLetters = ['b', 'c', 'd', 'e', 'f', 'g'];
     const randomRow = rowLetters[Math.floor(Math.random() * rowLetters.length)];
     const randomCol = Math.floor(Math.random() * 15) + 5;
@@ -132,7 +154,6 @@ function setupEventListeners() {
     vcb.add(comp, { col: randomCol, row: randomRow });
     updateInspector();
 
-    // Reset selection after placement
     selectedPaletteType = null;
     paletteItems.forEach(i => i.classList.remove('is-selected'));
     instructions.innerHTML = `✅ <b>${comp.name}</b> berhasil ditempatkan di Kolom ${randomCol}, Baris ${randomRow.toUpperCase()}.`;
@@ -146,7 +167,7 @@ function startSimulationLoop() {
     const dt = now - lastTime;
     lastTime = now;
 
-    // Step the circuit simulator
+    // Step simulator
     vcb.step(dt);
 
     simLoopId = requestAnimationFrame(loop);
