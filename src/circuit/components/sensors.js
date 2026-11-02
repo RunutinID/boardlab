@@ -38,3 +38,4 @@ export class SoilMoistureComponent extends CircuitComponent {
     this.addTerminal('aout', 'Analog Out', new Vector3(BREADBOARD_PITCH, 0, 0), 'analog');
   }
 }
+

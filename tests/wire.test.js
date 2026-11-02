@@ -53,3 +53,4 @@ assert.equal(signalOn.level, true);
 assert.ok(signalOn.flow > 0);
 
 console.log('All Wire Tests Passed!');
+

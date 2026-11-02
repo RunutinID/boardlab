@@ -14,3 +14,4 @@ export class OLEDDisplayComponent extends CircuitComponent {
     this.addTerminal('sda', 'SDA (I2C Data)', new Vector3(1.5 * BREADBOARD_PITCH, 0, 0), 'io');
   }
 }
+

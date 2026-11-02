@@ -66,3 +66,4 @@ export class ULN2003DriverComponent extends CircuitComponent {
     this.addTerminal('plus', 'Power 5V (+)', new Vector3(2, 0, 4), 'power');
   }
 }
+

@@ -49,3 +49,4 @@ export function createComponentFromType(type) {
       return null;
   }
 }
+

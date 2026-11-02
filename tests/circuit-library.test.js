@@ -51,3 +51,4 @@ assert.ok(vcb2.hasComponent('my-led'));
 assert.equal(vcb2.getWires().length, 2);
 
 console.log('All VirtualCircuitBoard Facade Tests Passed!');
+

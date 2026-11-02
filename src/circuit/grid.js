@@ -217,3 +217,4 @@ export function getBoardPinCoord(boardType, pinName) {
   }
   return getUnoPinCoord(pinName);
 }
+

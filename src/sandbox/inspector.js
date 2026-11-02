@@ -38,3 +38,4 @@ export function getCircuitHealthSummary({ componentCount = 0, wireCount = 0, has
   }
   return { status: 'OK', message: 'Status Normal. Sirkuit siap disimulasikan.' };
 }
+

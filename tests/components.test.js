@@ -77,3 +77,4 @@ const oled = new OLEDDisplayComponent({ id: 'oled1' });
 assert.equal(oled.terminals.length, 4, 'I2C OLED has GND, VCC, SCL, SDA');
 
 console.log('All Component Tests Passed!');
+

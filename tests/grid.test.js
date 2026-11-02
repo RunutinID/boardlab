@@ -37,3 +37,4 @@ const espPin = getBoardPinCoord('esp32', 'GPIO2');
 assert.ok(espPin && typeof espPin.x === 'number', 'GPIO2 coordinate must be resolved');
 
 console.log('All Grid Tests Passed!');
+

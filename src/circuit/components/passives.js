@@ -81,3 +81,4 @@ export class FSRComponent extends CircuitComponent {
     this.addTerminal('t2', 'Terminal 2', new Vector3(0, 0, BREADBOARD_PITCH / 2), 'passive');
   }
 }
+

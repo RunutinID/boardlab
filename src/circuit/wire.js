@@ -160,3 +160,4 @@ export function resolveWireSignal(wire, pinStates = {}) {
     level: isHigh
   };
 }
+

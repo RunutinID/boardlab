@@ -65,3 +65,4 @@ sim.setPinMode('D2', 'INPUT_PULLUP');
 assert.equal(sim.digitalRead('D2'), 1, 'INPUT_PULLUP without press should read HIGH (1)');
 
 console.log('All Simulation Tests Passed!');
+

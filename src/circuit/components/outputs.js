@@ -50,3 +50,4 @@ export class BuzzerComponent extends CircuitComponent {
     this.addTerminal('neg', 'Negative (−)', new Vector3(0, 0, 1.5 * BREADBOARD_PITCH), 'gnd');
   }
 }
+

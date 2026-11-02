@@ -42,3 +42,4 @@ assert.equal(wireTool.isConnecting(), false);
 assert.equal(wireTool.startPoint, null);
 
 console.log('All Interaction Tests Passed!');
+

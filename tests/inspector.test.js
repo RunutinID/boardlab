@@ -31,3 +31,4 @@ const healthNoPower = getCircuitHealthSummary({ componentCount: 3, wireCount: 2,
 assert.equal(healthNoPower.status, 'NO_POWER');
 
 console.log('All Inspector Tests Passed!');
+

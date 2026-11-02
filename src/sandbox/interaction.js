@@ -60,3 +60,4 @@ export class WireToolState {
     this.startPoint = null;
   }
 }
+
