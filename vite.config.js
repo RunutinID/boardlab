@@ -32,7 +32,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(rootDir, 'index.html'),
-        esp32: resolve(rootDir, 'esp32.html')
+        esp32: resolve(rootDir, 'esp32.html'),
+        sandbox: resolve(rootDir, 'sandbox.html')
       }
     }
   },

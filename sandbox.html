@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Circuit Sandbox 3D — Belajar Arduino & ESP32</title>
+    <meta name="description" content="Laboratorium 3D interaktif untuk merakit rangkaian elektronika bebas pada breadboard dengan mikrokontroler Arduino Uno dan ESP32." />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Google Fonts: Fredoka & Nunito -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/src/style.css" />
+    <style>
+      .sandbox-app {
+        display: flex;
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: #141a2c;
+        color: #f4f6f7;
+        font-family: 'Nunito', sans-serif;
+      }
+      .sandbox-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        background: rgba(29, 35, 40, 0.95);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        z-index: 10;
+      }
+      .sandbox-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .sandbox-title {
+        font-family: 'Fredoka', cursive;
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+      .sandbox-nav-links {
+        display: flex;
+        gap: 8px;
+        margin-left: 16px;
+      }
+      .sandbox-nav-btn {
+        padding: 5px 12px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #cbd5e1;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: background 0.2s;
+      }
+      .sandbox-nav-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .sandbox-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn-primary {
+        background: #3fae6a;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 16px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: transform 0.1s, background 0.2s;
+      }
+      .btn-primary:hover {
+        background: #369c5e;
+        transform: translateY(-1px);
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .sandbox-body {
+        display: flex;
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+      }
+      .sandbox-palette {
+        width: 280px;
+        background: rgba(26, 32, 44, 0.95);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 16px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        z-index: 5;
+      }
+      .palette-section-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #94a3b8;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .palette-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .palette-item {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 6px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease;
+      }
+      .palette-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: #38bdf8;
+        transform: translateY(-2px);
+      }
+      .palette-item.is-selected {
+        background: rgba(56, 189, 248, 0.15);
+        border-color: #38bdf8;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      }
+      .palette-icon {
+        font-size: 1.5rem;
+      }
+      .palette-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #e2e8f0;
+      }
+      .sandbox-canvas-container {
+        flex: 1;
+        position: relative;
+        background: #0f1422;
+      }
+      #stage-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .sandbox-instructions {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 0.825rem;
+        color: #94a3b8;
+        backdrop-filter: blur(6px);
+        pointer-events: none;
+      }
+      .sandbox-inspector {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 240px;
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 14px;
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .inspector-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #38bdf8;
+      }
+      .inspector-prop {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: #cbd5e1;
+      }
+      .inspector-val {
+        font-weight: 600;
+        color: #f8fafc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sandbox-app">
+      <header class="sandbox-header">
+        <div class="sandbox-brand">
+          <span class="sandbox-title">⚡ 3D Circuit Sandbox</span>
+          <nav class="sandbox-nav-links">
+            <a href="/" class="sandbox-nav-btn">Arduino Uno</a>
+            <a href="/esp32.html" class="sandbox-nav-btn">ESP32</a>
+            <span class="sandbox-nav-btn" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">Sandbox</span>
+          </nav>
+        </div>
+        <div class="sandbox-actions">
+          <select id="board-select" class="btn-secondary" style="padding: 5px 10px;">
+            <option value="uno">Arduino Uno R3</option>
+            <option value="esp32">ESP32 DevKit</option>
+          </select>
+          <button id="btn-wire-mode" class="btn-secondary">🔗 Mode Kabel: OFF</button>
+          <button id="btn-run-sim" class="btn-primary">▶ Jalankan Sirkuit</button>
+          <button id="btn-clear" class="btn-secondary">🗑️ Bersihkan</button>
+        </div>
+      </header>
+
+      <main class="sandbox-body">
+        <aside class="sandbox-palette" id="palette">
+          <div>
+            <div class="palette-section-title">Komponen Pasif</div>
+            <div class="palette-grid">
+              <div class="palette-item" data-type="resistor-220">
+                <span class="palette-icon">⚡</span>
+                <span class="palette-label">Resistor 220Ω</span>
+              </div>
+              <div class="palette-item" data-type="resistor-10k">
+                <span class="palette-icon">⚡</span>
+                <span class="palette-label">Resistor 10kΩ</span>
+              </div>
+              <div class="palette-item" data-type="potentiometer">
+                <span class="palette-icon">🎛️</span>
+                <span class="palette-label">Potensiometer</span>
+              </div>
+              <div class="palette-item" data-type="button">
+                <span class="palette-icon">🔘</span>
+                <span class="palette-label">Push Button</span>
+              </div>
+              <div class="palette-item" data-type="ldr">
+                <span class="palette-icon">☀️</span>
+                <span class="palette-label">LDR Sensor</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="palette-section-title">Output & Display</div>
+            <div class="palette-grid">
+              <div class="palette-item" data-type="led-red">
+                <span class="palette-icon">🔴</span>
+                <span class="palette-label">LED Merah</span>
+              </div>
+              <div class="palette-item" data-type="led-green">
+                <span class="palette-icon">🟢</span>
+                <span class="palette-label">LED Hijau</span>
+              </div>
+              <div class="palette-item" data-type="led-blue">
+                <span class="palette-icon">🔵</span>
+                <span class="palette-label">LED Biru</span>
+              </div>
+              <div class="palette-item" data-type="rgb-led">
+                <span class="palette-icon">🌈</span>
+                <span class="palette-label">RGB LED</span>
+              </div>
+              <div class="palette-item" data-type="buzzer">
+                <span class="palette-icon">🔊</span>
+                <span class="palette-label">Piezo Buzzer</span>
+              </div>
+              <div class="palette-item" data-type="oled">
+                <span class="palette-icon">📟</span>
+                <span class="palette-label">OLED 0.96"</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="palette-section-title">Sensor & Aktuator</div>
+            <div class="palette-grid">
+              <div class="palette-item" data-type="ultrasonic">
+                <span class="palette-icon">📡</span>
+                <span class="palette-label">HC-SR04</span>
+              </div>
+              <div class="palette-item" data-type="tmp36">
+                <span class="palette-icon">🌡️</span>
+                <span class="palette-label">TMP36 Suhu</span>
+              </div>
+              <div class="palette-item" data-type="servo">
+                <span class="palette-icon">🦾</span>
+                <span class="palette-label">SG90 Servo</span>
+              </div>
+              <div class="palette-item" data-type="dc-motor">
+                <span class="palette-icon">🌀</span>
+                <span class="palette-label">DC Motor Fan</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="sandbox-canvas-container" id="canvas-container">
+          <canvas id="stage-canvas"></canvas>
+          <div class="sandbox-instructions" id="instructions">
+            💡 <b>Cara Merakit:</b> Pilih komponen di sidebar kiri lalu klik pada baris breadboard untuk menempatkannya.
+          </div>
+          <div class="sandbox-inspector" id="inspector">
+            <div class="inspector-title">Inspektur Sirkuit</div>
+            <div class="inspector-prop">
+              <span>Status Simulasi:</span>
+              <span class="inspector-val" id="insp-sim-status">BERHENTI</span>
+            </div>
+            <div class="inspector-prop">
+              <span>Komponen Aktif:</span>
+              <span class="inspector-val" id="insp-comp-count">0</span>
+            </div>
+            <div class="inspector-prop">
+              <span>Kabel Terpasang:</span>
+              <span class="inspector-val" id="insp-wire-count">0</span>
+            </div>
+            <div class="inspector-prop">
+              <span>Tegangan Rel:</span>
+              <span class="inspector-val" id="insp-vcc">5.0 V</span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/src/sandbox/main.js"></script>
+  </body>
+</html>
