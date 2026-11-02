@@ -188,15 +188,15 @@
         position: absolute;
         top: 16px;
         right: 16px;
-        width: 240px;
-        background: rgba(15, 23, 42, 0.9);
+        width: 260px;
+        background: rgba(15, 23, 42, 0.92);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 8px;
         padding: 14px;
         backdrop-filter: blur(8px);
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
       }
       .inspector-title {
         font-size: 0.8rem;
@@ -213,6 +213,23 @@
       .inspector-val {
         font-weight: 600;
         color: #f8fafc;
+      }
+      .control-box {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .control-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 600;
+      }
+      .control-slider {
+        width: 100%;
+        accent-color: #38bdf8;
       }
     </style>
   </head>
@@ -325,22 +342,45 @@
             💡 <b>Cara Merakit:</b> Pilih komponen di sidebar kiri lalu klik pada baris breadboard untuk menempatkannya.
           </div>
           <div class="sandbox-inspector" id="inspector">
-            <div class="inspector-title">Inspektur Sirkuit</div>
+            <div class="inspector-title">Inspektur & Probe</div>
             <div class="inspector-prop">
-              <span>Status Simulasi:</span>
+              <span>Status:</span>
               <span class="inspector-val" id="insp-sim-status">BERHENTI</span>
             </div>
             <div class="inspector-prop">
-              <span>Komponen Aktif:</span>
+              <span>Komponen:</span>
               <span class="inspector-val" id="insp-comp-count">0</span>
             </div>
             <div class="inspector-prop">
-              <span>Kabel Terpasang:</span>
+              <span>Kabel:</span>
               <span class="inspector-val" id="insp-wire-count">0</span>
             </div>
             <div class="inspector-prop">
               <span>Tegangan Rel:</span>
               <span class="inspector-val" id="insp-vcc">5.0 V</span>
+            </div>
+
+            <div class="control-box">
+              <div class="control-label">Probe Voltase (Pin D13):</div>
+              <div class="inspector-val" id="probe-d13">0.00 V (LOW)</div>
+            </div>
+
+            <div class="control-box">
+              <div class="control-label">Kenop Potensiometer (A0):</div>
+              <input type="range" min="0" max="1023" value="512" class="control-slider" id="ctrl-pot" />
+              <div class="inspector-prop">
+                <span>Nilai ADC:</span>
+                <span class="inspector-val" id="pot-val-text">512 (2.50V)</span>
+              </div>
+            </div>
+
+            <div class="control-box">
+              <div class="control-label">Jarak Objek Ultrasonik:</div>
+              <input type="range" min="2" max="100" value="25" class="control-slider" id="ctrl-dist" />
+              <div class="inspector-prop">
+                <span>Jarak:</span>
+                <span class="inspector-val" id="dist-val-text">25 cm</span>
+              </div>
             </div>
           </div>
         </section>

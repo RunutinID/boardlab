@@ -1,6 +1,7 @@
 import { VirtualCircuitBoard, WIRE_COLORS, breadboardCoord } from '../circuit/index.js';
 import { createComponentFromType } from './palette.js';
 import { WireToolState, formatEndpointLabel } from './interaction.js';
+import { formatVoltageReading, formatPinStateBadge } from './inspector.js';
 
 let boardStage = null;
 let vcb = new VirtualCircuitBoard({ boardType: 'uno' });
@@ -24,6 +25,11 @@ const inspCompCount = document.getElementById('insp-comp-count');
 const inspWireCount = document.getElementById('insp-wire-count');
 const inspVcc = document.getElementById('insp-vcc');
 const instructions = document.getElementById('instructions');
+const probeD13 = document.getElementById('probe-d13');
+const ctrlPot = document.getElementById('ctrl-pot');
+const potValText = document.getElementById('pot-val-text');
+const ctrlDist = document.getElementById('ctrl-dist');
+const distValText = document.getElementById('dist-val-text');
 
 async function initStage() {
   const { BoardStage } = await import('../stage.js');
@@ -44,6 +50,12 @@ function updateInspector() {
   inspVcc.textContent = vcb.boardType === 'esp32' ? '3.3 V' : '5.0 V';
   inspSimStatus.textContent = isSimRunning ? 'BERJALAN' : 'BERHENTI';
   inspSimStatus.style.color = isSimRunning ? '#4ade80' : '#f87171';
+
+  // Live probe on D13
+  const d13Voltage = vcb.simulator.getPinVoltage('D13');
+  const d13State = formatPinStateBadge(vcb.simulator.pins.get('D13'));
+  probeD13.textContent = `${formatVoltageReading(d13Voltage)} (${d13State.level ? 'HIGH' : 'LOW'})`;
+  probeD13.style.color = d13State.color;
 }
 
 function setupEventListeners() {
@@ -102,10 +114,13 @@ function setupEventListeners() {
     if (isSimRunning) {
       btnRunSim.textContent = '⏸ Jeda Sirkuit';
       btnRunSim.style.background = '#eab308';
+      // Demo blink on D13 while running
+      vcb.setPinMode('D13', 'OUTPUT');
       startSimulationLoop();
     } else {
       btnRunSim.textContent = '▶ Jalankan Sirkuit';
       btnRunSim.style.background = '#3fae6a';
+      vcb.digitalWrite('D13', 0);
       stopSimulationLoop();
     }
     updateInspector();
@@ -122,10 +137,33 @@ function setupEventListeners() {
     instructions.innerHTML = '🧹 Papan sirkuit telah dibersihkan.';
   });
 
-  // 6. Canvas Click Interaction (Place component or connect wire)
+  // 6. Interactive Potentiometer Slider
+  ctrlPot.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    const voltage = ((val / 1023) * (vcb.boardType === 'esp32' ? 3.3 : 5.0)).toFixed(2);
+    potValText.textContent = `${val} (${voltage}V)`;
+    // Update any potentiometer components in VCB
+    for (const comp of vcb.getComponents()) {
+      if (comp.type === 'potentiometer') {
+        comp.applyState({ value: val });
+      }
+    }
+  });
+
+  // 7. Interactive Distance Slider
+  ctrlDist.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    distValText.textContent = `${val} cm`;
+    for (const comp of vcb.getComponents()) {
+      if (comp.type === 'ultrasonic') {
+        comp.applyState({ distanceCm: val });
+      }
+    }
+  });
+
+  // 8. Canvas Click Interaction (Place component or connect wire)
   canvas.addEventListener('click', (e) => {
     if (isWireMode) {
-      // Demo wire connection endpoints (e.g. D13 -> Breadboard row 12 or GND)
       const commonPins = ['D13', 'GND', '5V', 'A0', 'D2', 'D9'];
       const targetPin = commonPins[Math.floor(Math.random() * commonPins.length)];
 
@@ -162,10 +200,22 @@ function setupEventListeners() {
 
 function startSimulationLoop() {
   let lastTime = performance.now();
+  let blinkTimer = 0;
+  let d13Val = 0;
+
   function loop(now) {
     if (!isSimRunning) return;
     const dt = now - lastTime;
     lastTime = now;
+
+    // Simulate blink heartbeat on D13
+    blinkTimer += dt;
+    if (blinkTimer > 500) {
+      blinkTimer = 0;
+      d13Val = 1 - d13Val;
+      vcb.digitalWrite('D13', d13Val);
+      updateInspector();
+    }
 
     // Step simulator
     vcb.step(dt);
